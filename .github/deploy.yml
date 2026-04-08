@@ -1,4 +1,4 @@
-name: Deploy Portfolio
+name: Deploy Portfolio Docker to EC2
 
 on:
   push:
@@ -8,35 +8,27 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Deploy to Server
-      uses: appleboy/ssh-action@v1.0.3 # Latest version use karna better hai
-      with:
-        host: ${{ secrets.HOST }}
-        username: ubuntu
-        key: ${{ secrets.SSH_KEY }}
-        script: |
-          # Directory check aur Permissions
-          if [ ! -d "devops-portfolio" ]; then
-            git clone https://github.com/${{ github.repository }}.git devops-portfolio
-          fi
-          
-          cd devops-portfolio
-          
-          # Git pull se pehle local changes discard karna (Conflict se bachne ke liye)
-          git fetch --all
-          git reset --hard origin/main
-          
-          # Docker Commands
-          sudo docker stop portfolio || true
-          sudo docker rm portfolio || true
-          
-          # Build with cache cleaning (taaki storage full na ho)
-          sudo docker build -t portfolio .
-          
-          # Container Run
-          sudo docker run -d -p 80:80 --name portfolio portfolio
-          
-          # Unused images clean karna taaki EC2 ki disc space na bhare
-          sudo docker image prune -f
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/devops-portfolio
+            # Naya code pull karein
+            git pull origin main
+            
+            # Nayi image build karein
+            sudo docker build -t portfolio .
+            
+            # Purana container stop aur remove karein (agar chal raha ho)
+            sudo docker stop portfolio-container || true
+            sudo docker rm portfolio-container || true
+            
+            # Naya container start karein
+            sudo docker run -d -p 80:80 --name portfolio-container portfolio
