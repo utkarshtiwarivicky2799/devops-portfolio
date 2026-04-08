@@ -1,34 +1,36 @@
-name: Deploy Portfolio Docker to EC2
+name: CICD for Portfolio
 
 on:
   push:
     branches:
-      - main
+      - main  # Jab aap main branch par push karenge
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy via SSH
+      - name: SSH into EC2 and Deploy
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            # Project folder mein jana (Jo aapke screenshot mein tha)
             cd ~/devops-portfolio
-            # Naya code pull karein
+            
+            # Latest code GitHub se lena
             git pull origin main
             
-            # Nayi image build karein
-            sudo docker build -t portfolio .
-            
-            # Purana container stop aur remove karein (agar chal raha ho)
+            # Purana container saaf karna taaki port conflict na ho
             sudo docker stop portfolio-container || true
             sudo docker rm portfolio-container || true
             
-            # Naya container start karein
+            # Nayi image build karna
+            sudo docker build -t portfolio .
+            
+            # Naya container start karna
             sudo docker run -d -p 80:80 --name portfolio-container portfolio
