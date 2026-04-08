@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevOps Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c0f;
+    --bg2: #0f1117;
+    --bg3: #141720;
+    --border: #1e2330;
+    --green: #00ff88;
+    --green-dim: #00cc6a;
+    --green-dark: #003322;
+    --cyan: #00d4ff;
+    --cyan-dim: #0099bb;
+    --amber: #ffb800;
+    --red: #ff4455;
+    --text: #c8d0e0;
+    --text-dim: #5a6278;
+    --text-bright: #e8edf5;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-display: 'Space Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* Grid background */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: rgba(10, 12, 15, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+    padding: 0 2rem;
+  }
+
+  .nav-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+  }
+
+  .nav-logo {
+    font-family: var(--font-display);
+    font-size: 13px;
+    color: var(--green);
+    letter-spacing: 0.05em;
+  }
+
+  .nav-logo span { color: var(--text-dim); }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--green); }
+
+  .nav-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,255,136,0.4); }
+    50% { opacity: 0.7; box-shadow: 0 0 0 4px rgba(0,255,136,0); }
+  }
+
+  /* MAIN LAYOUT */
+  main { position: relative; z-index: 1; }
+
+  section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 5rem 2rem;
+  }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 80px;
+  }
+
+  .terminal-prompt {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .terminal-prompt::before {
+    content: '▶';
+    color: var(--green);
+    font-size: 10px;
+  }
+
+  .hero-name {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 700;
+    color: var(--text-bright);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-name .accent { color: var(--green); }
+
+  .hero-role {
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    color: var(--cyan);
+    margin-bottom: 1.5rem;
+    font-weight: 300;
+  }
+
+  .hero-role .cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    background: var(--cyan);
+    vertical-align: text-bottom;
+    animation: blink 1s step-end infinite;
+    margin-left: 2px;
+  }
+
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .hero-desc {
+    max-width: 560px;
+    color: var(--text-dim);
+    font-size: 13px;
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    padding: 0.7rem 1.6rem;
+    background: var(--green);
+    color: #000;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+  }
+
+  .btn-primary:hover {
+    background: #00ffaa;
+    transform: translateY(-1px);
+  }
+
+  .btn-outline {
+    padding: 0.7rem 1.6rem;
+    background: transparent;
+    color: var(--green);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid var(--green);
+    cursor: pointer;
+    transition: all 0.2s;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+  }
+
+  .btn-outline:hover {
+    background: rgba(0,255,136,0.08);
+    transform: translateY(-1px);
+  }
+
+  /* Terminal window */
+  .terminal-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    margin-top: 3rem;
+    max-width: 600px;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+  }
+
+  .terminal-bar {
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .t-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .t-red { background: #ff5f57; }
+  .t-yellow { background: #febc2e; }
+  .t-green { background: #28c840; }
+
+  .terminal-title { font-size: 11px; color: var(--text-dim); margin-left: auto; margin-right: auto; }
+
+  .terminal-body { padding: 1.2rem 1.4rem; font-size: 12px; line-height: 2; }
+
+  .t-line { display: flex; gap: 8px; }
+  .t-user { color: var(--green); }
+  .t-at { color: var(--text-dim); }
+  .t-host { color: var(--cyan); }
+  .t-path { color: var(--amber); }
+  .t-cmd { color: var(--text-bright); }
+  .t-out { color: var(--text-dim); padding-left: 0; }
+  .t-out.hi { color: var(--text); }
+
+  /* SECTION HEADERS */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .section-tag {
+    font-size: 11px;
+    color: var(--green);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    color: var(--text-bright);
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+  }
+
+  /* SKILLS */
+  #skills { background: linear-gradient(180deg, transparent, rgba(0,255,136,0.02) 50%, transparent); }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .skill-category {
+    background: var(--bg2);
+    padding: 1.5rem;
+    transition: background 0.2s;
+  }
+
+  .skill-category:hover { background: var(--bg3); }
+
+  .skill-cat-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.2rem;
+  }
+
+  .skill-icon {
+    width: 32px; height: 32px;
+    background: var(--green-dark);
+    border: 1px solid rgba(0,255,136,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .skill-cat-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-bright);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .skill-tag {
+    padding: 3px 10px;
+    background: rgba(0,212,255,0.06);
+    border: 1px solid rgba(0,212,255,0.15);
+    color: var(--cyan-dim);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+  }
+
+  .skill-tag.green {
+    background: rgba(0,255,136,0.06);
+    border-color: rgba(0,255,136,0.15);
+    color: var(--green-dim);
+  }
+
+  .skill-tag.amber {
+    background: rgba(255,184,0,0.06);
+    border-color: rgba(255,184,0,0.15);
+    color: var(--amber);
+  }
+
+  /* PROJECTS */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    position: relative;
+    transition: border-color 0.3s, transform 0.2s;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--green);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .project-card:hover {
+    border-color: rgba(0,255,136,0.3);
+    transform: translateY(-2px);
+  }
+
+  .project-card:hover::before { opacity: 1; }
+
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.8rem;
+  }
+
+  .project-name {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-bright);
+  }
+
+  .project-status {
+    font-size: 10px;
+    padding: 2px 8px;
+    border: 1px solid;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .status-learning { color: var(--amber); border-color: rgba(255,184,0,0.3); background: rgba(255,184,0,0.05); }
+  .status-building { color: var(--cyan); border-color: rgba(0,212,255,0.3); background: rgba(0,212,255,0.05); }
+  .status-done { color: var(--green); border-color: rgba(0,255,136,0.3); background: rgba(0,255,136,0.05); }
+
+  .project-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .project-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .stack-tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+
+  /* ABOUT */
+  #about .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .about-text p {
+    color: var(--text-dim);
+    font-size: 13px;
+    line-height: 1.9;
+    margin-bottom: 1rem;
+  }
+
+  .about-text p strong { color: var(--green); font-weight: 500; }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .stat-box {
+    background: var(--bg2);
+    padding: 1.2rem;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--green);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* CONTACT */
+  #contact {
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .contact-subtitle {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 2.5rem;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .contact-links {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.7rem 1.4rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+
+  .contact-link:hover {
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .contact-link .icon { color: var(--green); font-size: 14px; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-dim);
+    position: relative;
+    z-index: 1;
+  }
+
+  footer span { color: var(--green); }
+
+  /* Decorative corner accent */
+  .corner-accent {
+    position: absolute;
+    top: 5rem; right: 2rem;
+    width: 180px; height: 180px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: spin 20s linear infinite;
+  }
+
+  .corner-accent::after {
+    content: '';
+    position: absolute;
+    inset: 15px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    animation: spin 15s linear infinite reverse;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ANIMATIONS */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 680px) {
+    #about .about-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .hero-name { font-size: 2.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo"><span>~/</span>devops-portfolio</div>
+    <ul class="nav-links">
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-status">
+      <div class="status-dot"></div>
+      Open to opportunities
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="corner-accent"></div>
+  <div class="terminal-prompt">whoami — executing profile...</div>
+  <h1 class="hero-name">Utkarsh<br><span class="accent">Tiwari</span></h1>
+  <p class="hero-role">Aspiring DevOps Engineer<span class="cursor"></span></p>
+  <p class="hero-desc">
+    Building the bridge between development and operations. Passionate about automation,
+    infrastructure as code, and the DevOps philosophy of shipping faster with confidence.
+    Currently learning the full stack: cloud, containers, CI/CD, and beyond.
+  </p>
+  <div class="hero-cta">
+    <a href="#projects" class="btn-primary">View Projects</a>
+    <a href="#contact" class="btn-outline">Get In Touch</a>
+  </div>
+
+  <div class="terminal-card">
+    <div class="terminal-bar">
+      <div class="t-dot t-red"></div>
+      <div class="t-dot t-yellow"></div>
+      <div class="t-dot t-green"></div>
+      <span class="terminal-title">bash — 80×24</span>
+    </div>
+    <div class="terminal-body">
+      <div class="t-line">
+        <span class="t-user">you</span><span class="t-at">@</span><span class="t-host">devbox</span><span class="t-at">:</span><span class="t-path">~</span><span class="t-at">$</span>
+        <span class="t-cmd">cat ./profile.yaml</span>
+      </div>
+      <div class="t-line"><span class="t-out hi">name:       Utkarsh Tiwari</span></div>
+      <div class="t-line"><span class="t-out hi">role:       Aspiring DevOps Engineer</span></div>
+      <div class="t-line"><span class="t-out hi">focus:      Cloud · Containers · CI/CD · IaC</span></div>
+      <div class="t-line"><span class="t-out hi">status:     <span style="color:var(--green)">✓ open_to_work</span></span></div>
+      <div class="t-line"><span class="t-out hi">learning:   Kubernetes, Terraform, AWS</span></div>
+      <div class="t-line"><span class="t-out" style="color:var(--text-dim)"> </span></div>
+      <div class="t-line">
+        <span class="t-user">you</span><span class="t-at">@</span><span class="t-host">devbox</span><span class="t-at">:</span><span class="t-path">~</span><span class="t-at">$</span>
+        <span class="t-cmd" style="opacity:0.5">▌</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-header fade-up">
+    <span class="section-tag">// 01</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-title fade-up">Technical Skills</h2>
+
+  <div class="skills-grid fade-up" style="margin-top:2rem;">
+    <div class="skill-category">
+      <div class="skill-cat-header">
+        <div class="skill-icon">⚙</div>
+        <span class="skill-cat-name">CI/CD</span>
+      </div>
+      <div class="skill-tags">
+        <span class="skill-tag green">GitHub Actions</span>
+        <span class="skill-tag green">Jenkins</span>
+        <span class="skill-tag green">GitLab CI</span>
+        <span class="skill-tag green">Webhooks</span>
+        <span class="skill-tag green">Pipeline Design</span>
+      </div>
+    </div>
+
+    <div class="skill-category">
+      <div class="skill-cat-header">
+        <div class="skill-icon">☁</div>
+        <span class="skill-cat-name">Cloud Platforms</span>
+      </div>
+      <div class="skill-tags">
+        <span class="skill-tag">AWS EC2/S3</span>
+        <span class="skill-tag">Azure Basics</span>
+        <span class="skill-tag">GCP</span>
+        <span class="skill-tag">IAM</span>
+        <span class="skill-tag">VPC</span>
+        <span class="skill-tag">CloudFormation</span>
+      </div>
+    </div>
+
+    <div class="skill-category">
+      <div class="skill-cat-header">
+        <div class="skill-icon">◈</div>
+        <span class="skill-cat-name">Containers</span>
+      </div>
+      <div class="skill-tags">
+        <span class="skill-tag amber">Docker</span>
+        <span class="skill-tag amber">Docker Compose</span>
+        <span class="skill-tag amber">Kubernetes</span>
+        <span class="skill-tag amber">Helm</span>
+        <span class="skill-tag amber">Container Registry</span>
+      </div>
+    </div>
+
+    <div class="skill-category">
+      <div class="skill-cat-header">
+        <div class="skill-icon">⬡</div>
+        <span class="skill-cat-name">IaC & Config</span>
+      </div>
+      <div class="skill-tags">
+        <span class="skill-tag green">Terraform</span>
+        <span class="skill-tag green">Ansible</span>
+        <span class="skill-tag green">YAML</span>
+        <span class="skill-tag green">HCL</span>
+      </div>
+    </div>
+
+    <div class="skill-category">
+      <div class="skill-cat-header">
+        <div class="skill-icon">$</div>
+        <span class="skill-cat-name">Linux & Scripting</span>
+      </div>
+      <div class="skill-tags">
+        <span class="skill-tag">Bash</span>
+        <span class="skill-tag">Python</span>
+        <span class="skill-tag">Linux Admin</span>
+        <span class="skill-tag">SSH</span>
+        <span class="skill-tag">Cron Jobs</span>
+        <span class="skill-tag">Vim</span>
+      </div>
+    </div>
+
+    <div class="skill-category">
+      <div class="skill-cat-header">
+        <div class="skill-icon">◉</div>
+        <span class="skill-cat-name">Monitoring</span>
+      </div>
+      <div class="skill-tags">
+        <span class="skill-tag amber">Prometheus</span>
+        <span class="skill-tag amber">Grafana</span>
+        <span class="skill-tag amber">ELK Stack</span>
+        <span class="skill-tag amber">Alerting</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-header fade-up">
+    <span class="section-tag">// 02</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-title fade-up">Projects</h2>
+
+  <div class="projects-grid fade-up" style="margin-top:2rem;">
+
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-name">CI/CD Pipeline Lab</span>
+        <span class="project-status status-done">Done</span>
+      </div>
+      <p class="project-desc">Built a full CI/CD pipeline using GitHub Actions that automatically tests, builds a Docker image, and deploys to a staging environment on every push to main.</p>
+      <div class="project-stack">
+        <span class="stack-tag">GitHub Actions</span>
+        <span class="stack-tag">Docker</span>
+        <span class="stack-tag">AWS EC2</span>
+        <span class="stack-tag">Nginx</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-name">Terraform AWS Setup</span>
+        <span class="project-status status-building">Building</span>
+      </div>
+      <p class="project-desc">Provisioning a full AWS VPC environment with public/private subnets, EC2 instances, and security groups using Terraform modules. Practicing state management with S3 backend.</p>
+      <div class="project-stack">
+        <span class="stack-tag">Terraform</span>
+        <span class="stack-tag">AWS VPC</span>
+        <span class="stack-tag">S3</span>
+        <span class="stack-tag">IAM</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-name">K8s Home Cluster</span>
+        <span class="project-status status-building">Building</span>
+      </div>
+      <p class="project-desc">Setting up a local Kubernetes cluster using kind (Kubernetes in Docker). Deploying sample microservices, configuring ingress, and learning pod scheduling concepts.</p>
+      <div class="project-stack">
+        <span class="stack-tag">Kubernetes</span>
+        <span class="stack-tag">kind</span>
+        <span class="stack-tag">Helm</span>
+        <span class="stack-tag">Ingress</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-name">Ansible Server Config</span>
+        <span class="project-status status-done">Done</span>
+      </div>
+      <p class="project-desc">Wrote Ansible playbooks to automate provisioning of Linux servers: user creation, package installation, firewall config, and app deployment across multiple hosts.</p>
+      <div class="project-stack">
+        <span class="stack-tag">Ansible</span>
+        <span class="stack-tag">Linux</span>
+        <span class="stack-tag">YAML</span>
+        <span class="stack-tag">SSH</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-name">Monitoring Stack</span>
+        <span class="project-status status-learning">Learning</span>
+      </div>
+      <p class="project-desc">Deploying Prometheus + Grafana via Docker Compose to monitor system metrics. Building dashboards for CPU, memory, and container health. Learning alertmanager configs.</p>
+      <div class="project-stack">
+        <span class="stack-tag">Prometheus</span>
+        <span class="stack-tag">Grafana</span>
+        <span class="stack-tag">Docker Compose</span>
+        <span class="stack-tag">Node Exporter</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-header">
+        <span class="project-name">Bash Automation Scripts</span>
+        <span class="project-status status-done">Done</span>
+      </div>
+      <p class="project-desc">A collection of shell scripts for sysadmin tasks: log rotation, disk usage alerts, automated backups to S3, and system health checks with email notifications.</p>
+      <div class="project-stack">
+        <span class="stack-tag">Bash</span>
+        <span class="stack-tag">Cron</span>
+        <span class="stack-tag">AWS CLI</span>
+        <span class="stack-tag">S3</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-header fade-up">
+    <span class="section-tag">// 03</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-title fade-up">About Me</h2>
+
+  <div class="about-grid fade-up" style="margin-top:2rem;">
+    <div class="about-text">
+      <p>
+        I'm a <strong>self-taught aspiring DevOps engineer</strong> working my way through the
+        full modern infrastructure stack. My journey started with Linux and shell scripting,
+        and it's led me deep into containers, cloud platforms, and the world of automation.
+      </p>
+      <p>
+        I believe in learning by doing — every project in my portfolio is something I actually
+        <strong>built and broke and fixed</strong>. That's how you actually understand
+        how systems work.
+      </p>
+      <p>
+        Currently preparing for <strong>AWS Cloud Practitioner</strong> and
+        <strong>CKA (Certified Kubernetes Administrator)</strong> certifications.
+        Open to junior roles, internships, or collaborations.
+      </p>
+    </div>
+
+    <div>
+      <div class="about-stats">
+        <div class="stat-box">
+          <span class="stat-num">6+</span>
+          <span class="stat-label">Projects Built</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">5+</span>
+          <span class="stat-label">Tools Learned</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">2</span>
+          <span class="stat-label">Certs In Progress</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">∞</span>
+          <span class="stat-label">Things to Learn</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-header fade-up">
+    <span class="section-tag">// 04</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-title fade-up">Get In Touch</h2>
+  <p class="contact-subtitle fade-up">
+    Open to junior DevOps roles, internships, and learning collaborations.
+    Feel free to reach out — I respond to all messages.
+  </p>
+
+  <div class="contact-links fade-up">
+    <a href="mailto:utkarshtiwarivicky2799@gmail.com" class="contact-link">
+      <span class="icon">✉</span> utkarshtiwarivicky2799@gmail.com
+    </a>
+    <a href="https://github.com/utkarshtiwarivicky2799" class="contact-link" target="_blank">
+      <span class="icon">◈</span> github.com/utkarshtiwarivicky2799
+    </a>
+    <a href="https://linkedin.com/in/utkarsh-tiwari-1b490a226" class="contact-link" target="_blank">
+      <span class="icon">◉</span> LinkedIn
+    </a>
+  </div>
+</section>
+
+<footer>
+  <p>Built with <span>✦</span> HTML/CSS/JS · No frameworks · No fluff · <span>100% handcrafted</span></p>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // Typewriter for hero role
+  const roles = ['Aspiring DevOps Engineer', 'Cloud Learner', 'Automation Enthusiast', 'Infrastructure Builder'];
+  const roleEl = document.querySelector('.hero-role');
+  let roleIndex = 0, charIndex = 0, deleting = false;
+
+  function typeRole() {
+    const current = roles[roleIndex];
+    if (!deleting) {
+      charIndex++;
+      roleEl.innerHTML = current.slice(0, charIndex) + '<span class="cursor"></span>';
+      if (charIndex === current.length) { deleting = true; setTimeout(typeRole, 2200); return; }
+    } else {
+      charIndex--;
+      roleEl.innerHTML = current.slice(0, charIndex) + '<span class="cursor"></span>';
+      if (charIndex === 0) { deleting = false; roleIndex = (roleIndex + 1) % roles.length; }
+    }
+    setTimeout(typeRole, deleting ? 45 : 75);
+  }
+
+  setTimeout(typeRole, 1200);
+</script>
+</body>
+</html>
